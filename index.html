@@ -755,10 +755,51 @@
       document.body.style.overflow = 'hidden';
     }
 
+    function getAppBasePath() {
+      const path = window.location.pathname || '/';
+      if (path === '/') return '';
+      if (path.endsWith('/')) return path.replace(/\/$/, '');
+
+      const lastSegment = path.split('/').pop() || '';
+      if (lastSegment.includes('.')) {
+        const directoryPath = path.slice(0, path.lastIndexOf('/') + 1);
+        return directoryPath === '/' ? '' : directoryPath.replace(/\/$/, '');
+      }
+
+      return path;
+    }
+
+    function toAppPath(relativePath) {
+      const cleanPath = String(relativePath || '').replace(/^\/+/, '');
+      if (!cleanPath) return getAppBasePath() || '/';
+      const basePath = getAppBasePath();
+      return basePath ? `${basePath}/${cleanPath}` : `/${cleanPath}`;
+    }
+
+    const productImageMap = {
+      'QR-CODE-COM-TEXTO': [
+        toAppPath('images/products/QR-CODE-COM-TEXTO/2.png')
+      ],
+      'QR-CODE-PIX': [
+        toAppPath('images/products/QR-CODE-PIX/image.jpg'),
+        toAppPath('images/products/QR-CODE-PIX/image (5).jpg')
+      ],
+      'QR-CODE-SIMPLES': [
+        toAppPath('images/products/QR-CODE-SIMPLES/capa.png'),
+        toAppPath('images/products/QR-CODE-SIMPLES/exemplo.png')
+      ]
+    };
+
+    function normalizeAssetPaths(container) {
+      container.querySelectorAll('img[src]').forEach((image) => {
+        const source = image.getAttribute('src') || '';
+        if (/^(https?:)?\/\//.test(source) || source.startsWith('data:') || source.startsWith('/')) return;
+        image.setAttribute('src', toAppPath(source));
+      });
+    }
+
     async function fetchSkuImages(sku) {
-      const response = await fetch(`/api/products/${encodeURIComponent(sku)}/images`);
-      if (!response.ok) throw new Error('Falha ao carregar imagens');
-      return response.json();
+      return productImageMap[sku] || [];
     }
 
 
@@ -848,16 +889,18 @@
 
     async function loadSwipePages() {
       const [catalogHtml, productTextoHtml, productPixHtml, productSimplesHtml] = await Promise.all([
-        fetch('/pages/catalog.html').then((r) => r.text()),
-        fetch('/pages/qr-code-com-texto.html').then((r) => r.text()),
-        fetch('/pages/qr-code-pix.html').then((r) => r.text()),
-        fetch('/pages/qr-code-simples.html').then((r) => r.text())
+        fetch(toAppPath('pages/catalog.html')).then((r) => r.text()),
+        fetch(toAppPath('pages/qr-code-com-texto.html')).then((r) => r.text()),
+        fetch(toAppPath('pages/qr-code-pix.html')).then((r) => r.text()),
+        fetch(toAppPath('pages/qr-code-simples.html')).then((r) => r.text())
       ]);
 
       pageCatalog.innerHTML = catalogHtml;
       pageProductTexto.innerHTML = productTextoHtml;
       pageProductPix.innerHTML = productPixHtml;
       pageProductSimples.innerHTML = productSimplesHtml;
+
+      normalizeAssetPaths(pageCatalog);
 
       catalogLinks = Array.from(document.querySelectorAll('#catalog-links a'));
 
