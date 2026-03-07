@@ -3,20 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogos | AUTOADESIVOS</title>
-  <meta name="description" content="A AUTOADESIVOS produz adesivos personalizados e de uso geral, QR Code, decoração, avisos, sinalização, laterais automotivas. Crie ou edite em tempo real! " />
+  <title>Catálogos e Adesivo QR Code com Texto | AUTOADESIVOS</title>
+  <meta name="description" content="AUTOADESIVOS: acesse nossos canais de catálogo e conheça o Adesivo escaneável QR CODE - COM TEXTO com personalização, tamanhos de 12cm a 24cm e atendimento direto." />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="AUTO ADESIVOS" />
   <link rel="canonical" href="https://www.autoadesivos.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AUTOADESIVOS | QR CODE - COM TEXTO" />
+  <meta property="og:description" content="Adesivo escaneável com texto customizado. Escolha fonte, cor, formatação e tamanho." />
+  <meta property="og:url" content="https://www.autoadesivos.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <style>
     :root {
-      --bg: #0f1115;
       --card: #171a21;
       --text: #f5f7fb;
       --muted: #aeb6c5;
       --border: #2a3040;
       --hover: #202635;
       --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      --accent: #4fd1ff;
+      --gallery-box-width: 320px;
+      --gallery-box-height: 320px;
     }
 
     * { box-sizing: border-box; }
@@ -43,7 +51,60 @@
       box-shadow: var(--shadow);
       padding: 28px;
       backdrop-filter: blur(8px);
+      overflow: hidden;
     }
+
+    .swipe-shell {
+      overflow: hidden;
+      touch-action: pan-y;
+      border-radius: 14px;
+      height: 640px;
+    }
+
+    .swipe-track {
+      display: flex;
+      align-items: flex-start;
+      width: 400%;
+      transition: transform 0.25s ease;
+    }
+
+    .page {
+      width: 25%;
+      flex: 0 0 25%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .page-content {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #394055 transparent;
+    }
+
+    .page-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .page-content::-webkit-scrollbar-thumb {
+      background: #394055;
+      border-radius: 6px;
+    }
+
+    .loading {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      border: 1px dashed #4b5467;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
 
     .eyebrow {
       margin: 0 0 18px;
@@ -69,7 +130,7 @@
       font-size: 14px;
       line-height: 1.5;
     }
-    
+
     .links {
       display: grid;
       gap: 14px;
@@ -103,7 +164,14 @@
       border-radius: 12px;
       background: #0f131b;
       border: 1px solid var(--border);
-      font-size: 20px;
+      overflow: hidden;
+    }
+
+    .icon img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      display: block;
     }
 
     .label-wrap {
@@ -130,51 +198,737 @@
       font-size: 18px;
     }
 
+    .product-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .product-sub {
+      margin: 0 0 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gallery {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .gallery.single-image {
+      overflow-x: hidden;
+      touch-action: auto;
+      justify-content: center;
+      padding-bottom: 0;
+    }
+
+    .gallery::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .gallery::-webkit-scrollbar-thumb {
+      background: #394055;
+      border-radius: 6px;
+    }
+
+    .gallery-item {
+      scroll-snap-align: start;
+      min-width: 100%;
+      width: min(100%, var(--gallery-box-width));
+      height: var(--gallery-box-height);
+      min-height: 0;
+      margin: 0 auto;
+      border: 1px dashed #53607e;
+      overflow: hidden;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(79,209,255,0.06));
+    }
+
+    .gallery-empty {
+      text-align: center;
+      padding: 18px;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+      background: #0f131b;
+      cursor: zoom-in;
+    }
+
+    .gallery-wrap {
+      position: relative;
+      margin-top: 6px;
+    }
+
+    .expand-image-btn {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid #4b5d81;
+      background: rgba(18, 24, 35, 0.9);
+      color: #e7edfb;
+      border-radius: 10px;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .expand-image-btn:hover {
+      background: rgba(34, 44, 62, 0.95);
+      border-color: #5f739d;
+    }
+
+    .catalog-notes {
+      margin-top: 16px;
+      border: 1px solid #33425f;
+      border-radius: 12px;
+      background: rgba(79, 209, 255, 0.08);
+      padding: 10px 12px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #dce5f8;
+    }
+
+    .details {
+      margin: 14px 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #d8deec;
+      line-height: 1.45;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .details strong {
+      color: #ffffff;
+    }
+
+    .buy-btn {
+      width: 100%;
+      margin-top: 12px;
+      border: 1px solid #5ca8ff;
+      background: linear-gradient(180deg, #3f8cff, #2976eb);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pager {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pager-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: min(100%, 210px);
+    }
+
+    .pager-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid #3d4a67;
+      background: #1b2333;
+      color: #e8efff;
+      font-size: 18px;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .pager-arrow:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .pager-count {
+      min-width: 56px;
+      text-align: center;
+      font-size: 12px;
+      color: #d9e2f5;
+      border: 1px solid #33425f;
+      border-radius: 10px;
+      padding: 6px 8px;
+      background: rgba(79, 209, 255, 0.08);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4e566c;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .page-dots {
+      margin: 8px auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: min(100%, 210px);
+    }
+
     .footer {
-      margin-top: 18px;
+      margin-top: 14px;
       text-align: center;
       color: var(--muted);
       font-size: 12px;
     }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .channel-modal[hidden] { display: none; }
+
+    .channel-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .channel-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 8, 14, 0.68);
+      backdrop-filter: blur(2px);
+    }
+
+    .channel-modal-card {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 360px);
+      background: #171b25;
+      border: 1px solid #38435e;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .channel-modal-title {
+      margin: 0;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .channel-modal-sub {
+      margin: 6px 0 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .channel-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .channel-option-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      background: #1b2230;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .channel-option-btn:hover {
+      background: #222c3e;
+      border-color: #4b5d81;
+    }
+
+    .channel-modal-close {
+      width: 100%;
+      margin-top: 10px;
+      border: 1px solid #4b5d81;
+      background: transparent;
+      color: #d7dfef;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .image-modal[hidden] { display: none; }
+
+    .image-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .image-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 8, 14, 0.86);
+    }
+
+    .image-modal-figure {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 860px);
+      max-height: 88vh;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .image-modal-img {
+      width: 100%;
+      max-height: calc(88vh - 52px);
+      object-fit: contain;
+      border-radius: 14px;
+      border: 1px solid #364159;
+      background: #0f131b;
+    }
+
+    .image-modal-close {
+      justify-self: end;
+      border: 1px solid #4b5d81;
+      background: rgba(18, 24, 35, 0.95);
+      color: #eef3ff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .swipe-shell {
+        height: 600px;
+      }
+    }
   </style>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "QR CODE - COM TEXTO",
+      "sku": "QR-CODE-COM-TEXTO",
+      "description": "Adesivo escaneável com texto customizado, com personalização de conteúdo do QR, posição de texto, fontes, formatação, cores e tamanho de 12cm a 24cm.",
+      "brand": { "@type": "Brand", "name": "AUTOADESIVOS" },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "BRL",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  </script>
 </head>
 <body>
-  <main class="card">
-    <p class="eyebrow">CATÁLOGOS</p>
-    <h1 class="title">AUTOADESIVOS</h1>
-    <p class="intro">
-     Adesivos personalizados e de uso geral, QR Code, decoração, avisos, sinalização, automotivos. Crie ou edite em tempo real no catálogo de sua preferência!
-    </p>
-    <section class="links">
-      <a class="link" href="https://discord.gg/SEUCODIGO" target="_blank" rel="noopener noreferrer">
-        <span class="icon" aria-hidden="true">🎮</span>
-        <span class="label-wrap">
-          <span class="label">DISCORD</span>
-          <span class="sub">Entre pelo convite</span>
-        </span>
-        <span class="arrow" aria-hidden="true">↗</span>
-      </a>
+  <main class="card" aria-label="Página inicial com catálogos e produto destaque">
+    <div class="swipe-shell" id="swipe-shell">
+      <div class="swipe-track" id="swipe-track">
+        <section class="page" aria-label="Página 1 - Catálogos">
+          <div class="page-content" id="page-catalog">
+            <div class="loading">Carregando catálogos...</div>
+          </div>
+        </section>
 
-      <a class="link" href="https://t.me/SEUUSUARIO" target="_blank" rel="noopener noreferrer">
-        <span class="icon" aria-hidden="true">✈️</span>
-        <span class="label-wrap">
-          <span class="label">TELEGRAM</span>
-          <span class="sub">Fale por mensagem</span>
-        </span>
-        <span class="arrow" aria-hidden="true">↗</span>
-      </a>
+        <section class="page" aria-label="Página 2 - QR CODE COM TEXTO">
+          <div class="page-content" id="page-product-texto">
+            <div class="loading">Carregando produto...</div>
+          </div>
+        </section>
 
-      <a class="link" href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
-        <span class="icon" aria-hidden="true">💬</span>
-        <span class="label-wrap">
-          <span class="label">WHATSAPP</span>
-          <span class="sub">Atendimento direto</span>
-        </span>
-        <span class="arrow" aria-hidden="true">↗</span>
-      </a>
-    </section>
+        <section class="page" aria-label="Página 3 - QR CODE PIX">
+          <div class="page-content" id="page-product-pix">
+            <div class="loading">Carregando produto...</div>
+          </div>
+        </section>
 
-    <div class="footer">Troque os links pelos seus antes de publicar.</div>
+        <section class="page" aria-label="Página 4 - QR CODE SIMPLES">
+          <div class="page-content" id="page-product-simples">
+            <div class="loading">Carregando produto...</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="pager" aria-label="Navegação entre páginas">
+      <div class="pager-controls" aria-label="Controles de navegação">
+        <button class="pager-arrow" type="button" id="pager-prev" aria-label="Página anterior">←</button>
+        <div class="pager-count" aria-live="polite"><span id="pager-current">1</span>/<span id="pager-total">4</span></div>
+        <button class="pager-arrow" type="button" id="pager-next" aria-label="Próxima página">→</button>
+      </div>
+    </div>
+
+    <div class="footer">Atualize os links de catálogo antes de publicar.</div>
   </main>
+
+  <div class="channel-modal" id="channel-modal" hidden>
+    <div class="channel-modal-backdrop" data-close-modal="true"></div>
+    <section class="channel-modal-card" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
+      <h3 class="channel-modal-title" id="channel-modal-title">Escolha o canal para comprar</h3>
+      <p class="channel-modal-sub">Selecione abaixo para continuar com o SKU QR-CODE-COM-TEXTO.</p>
+      <div class="channel-options" id="channel-options"></div>
+      <button class="channel-modal-close" type="button" id="channel-modal-close">Cancelar</button>
+    </section>
+  </div>
+
+  <div class="image-modal" id="image-modal" hidden>
+    <div class="image-modal-backdrop" data-close-image-modal="true"></div>
+    <figure class="image-modal-figure" role="dialog" aria-modal="true" aria-labelledby="image-modal-title">
+      <button class="image-modal-close" type="button" id="image-modal-close">Fechar</button>
+      <img class="image-modal-img" id="image-modal-img" src="" alt="" />
+      <figcaption id="image-modal-title" class="sr-only"></figcaption>
+    </figure>
+  </div>
+
+  <script>
+    const shell = document.getElementById('swipe-shell');
+    const track = document.getElementById('swipe-track');
+    let dots = [];
+    const pagerPrev = document.getElementById('pager-prev');
+    const pagerNext = document.getElementById('pager-next');
+    const pagerCurrent = document.getElementById('pager-current');
+    const pagerTotal = document.getElementById('pager-total');
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const pageCatalog = document.getElementById('page-catalog');
+    const pageProductTexto = document.getElementById('page-product-texto');
+    const pageProductPix = document.getElementById('page-product-pix');
+    const pageProductSimples = document.getElementById('page-product-simples');
+    const channelModal = document.getElementById('channel-modal');
+    const channelOptions = document.getElementById('channel-options');
+    const channelModalClose = document.getElementById('channel-modal-close');
+    const imageModal = document.getElementById('image-modal');
+    const imageModalImg = document.getElementById('image-modal-img');
+    const imageModalClose = document.getElementById('image-modal-close');
+    const imageModalTitle = document.getElementById('image-modal-title');
+
+    let pageIndex = 0;
+    let startX = 0;
+    let catalogLinks = [];
+    let selectedSku = 'QR-CODE-COM-TEXTO';
+    const largestBox = { width: 0, height: 0 };
+
+    function bindDotNavigation() {
+      dots = Array.from(document.querySelectorAll('.dot'));
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => setPage(Number(dot.dataset.page || 0)));
+      });
+      setPage(pageIndex);
+    }
+
+
+    function setPage(index) {
+      const lastPage = pages.length - 1;
+      pageIndex = Math.max(0, Math.min(lastPage, index));
+      const percentage = 100 / pages.length;
+      track.style.transform = `translateX(-${pageIndex * percentage}%)`;
+      dots.forEach((dot) => dot.classList.toggle('active', Number(dot.dataset.page || -1) === pageIndex));
+      pagerCurrent.textContent = String(pageIndex + 1);
+      pagerTotal.textContent = String(pages.length);
+      pagerPrev.disabled = pageIndex === 0;
+      pagerNext.disabled = pageIndex === lastPage;
+    }
+
+    function goNextPage() {
+      setPage(pageIndex + 1);
+    }
+
+    function goPreviousPage() {
+      setPage(pageIndex - 1);
+    }
+
+    function getChannelDeepLink(channelHref, message) {
+      if (channelHref.includes('wa.me')) {
+        const separator = channelHref.includes('?') ? '&' : '?';
+        return `${channelHref}${separator}text=${encodeURIComponent(message)}`;
+      }
+      if (channelHref.includes('t.me')) {
+        return `https://t.me/share/url?url=${encodeURIComponent('https://www.autoadesivos.com')}&text=${encodeURIComponent(message)}`;
+      }
+      if (channelHref.includes('discord.gg')) return channelHref;
+      return channelHref;
+    }
+
+    function closeChannelModal() {
+      channelModal.hidden = true;
+      if (imageModal.hidden) document.body.style.overflow = '';
+    }
+
+    function openImageModal(imageSource, imageAlt) {
+      if (!imageSource) return;
+      imageModalImg.src = imageSource;
+      imageModalImg.alt = imageAlt || 'Imagem do produto em tamanho ampliado';
+      imageModalTitle.textContent = imageModalImg.alt;
+      imageModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+      imageModal.hidden = true;
+      imageModalImg.src = '';
+      imageModalImg.alt = '';
+      imageModalTitle.textContent = '';
+      if (channelModal.hidden) document.body.style.overflow = '';
+    }
+
+    function openChannelModal(sku) {
+      if (!catalogLinks.length) return;
+      selectedSku = sku || selectedSku;
+      const modalSub = channelModal.querySelector('.channel-modal-sub');
+      if (modalSub) {
+        modalSub.textContent = `Selecione abaixo para continuar com o SKU ${selectedSku}.`;
+      }
+
+      channelOptions.innerHTML = '';
+      catalogLinks.forEach((link) => {
+        const channelName = link.dataset.channel || 'Canal';
+        const optionButton = document.createElement('button');
+        optionButton.type = 'button';
+        optionButton.className = 'channel-option-btn';
+        optionButton.textContent = channelName;
+        optionButton.addEventListener('click', () => {
+          const message = `Olá! Quero comprar o adesivo ${selectedSku}.`;
+          const href = link.getAttribute('href') || '#';
+          const targetLink = getChannelDeepLink(href, `[${channelName}] ${message}`);
+          window.open(targetLink, '_blank', 'noopener,noreferrer');
+          closeChannelModal();
+        });
+        channelOptions.appendChild(optionButton);
+      });
+
+      channelModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function fetchSkuImages(sku) {
+      const response = await fetch(`/api/products/${encodeURIComponent(sku)}/images`);
+      if (!response.ok) throw new Error('Falha ao carregar imagens');
+      return response.json();
+    }
+
+
+    function waitForImageLoad(image) {
+      return new Promise((resolve) => {
+        if (image.complete && image.naturalWidth && image.naturalHeight) {
+          resolve({ width: image.naturalWidth, height: image.naturalHeight });
+          return;
+        }
+
+        const done = (value) => {
+          image.removeEventListener('load', onLoad);
+          image.removeEventListener('error', onError);
+          resolve(value);
+        };
+
+        const onLoad = () => done({ width: image.naturalWidth, height: image.naturalHeight });
+        const onError = () => done(null);
+
+        image.addEventListener('load', onLoad, { once: true });
+        image.addEventListener('error', onError, { once: true });
+      });
+    }
+
+    function updateLargestBox(dimensions) {
+      if (!dimensions.length) return;
+      dimensions.forEach((dim) => {
+        largestBox.width = Math.max(largestBox.width, dim.width);
+        largestBox.height = Math.max(largestBox.height, dim.height);
+      });
+
+      const width = Math.max(180, Math.min(360, Math.round(largestBox.width)));
+      const height = Math.max(180, Math.min(360, Math.round(largestBox.height)));
+      document.documentElement.style.setProperty('--gallery-box-width', `${width}px`);
+      document.documentElement.style.setProperty('--gallery-box-height', `${height}px`);
+    }
+
+    async function hydrateProductPage(container) {
+      const gallery = container.querySelector('.gallery');
+      if (!gallery) return;
+
+      const sku = gallery.dataset.sku;
+      const expandImageBtn = container.querySelector('[data-expand-image="true"]');
+      try {
+        const imagePaths = await fetchSkuImages(sku);
+        if (!Array.isArray(imagePaths) || !imagePaths.length) {
+          gallery.innerHTML = '<article class="gallery-item gallery-empty">Nenhuma imagem encontrada para este SKU.</article>';
+          if (expandImageBtn) expandImageBtn.disabled = true;
+          return;
+        }
+
+        gallery.innerHTML = imagePaths.map((src, index) => `
+          <article class="gallery-item">
+            <img src="${src}" alt="${sku} - imagem ${index + 1}" loading="lazy" />
+          </article>
+        `).join('');
+
+        const galleryItems = gallery.querySelectorAll('.gallery-item');
+        const hasMoreThanOne = galleryItems.length > 1;
+        gallery.classList.toggle('single-image', !hasMoreThanOne);
+        gallery.setAttribute('aria-label', hasMoreThanOne ? 'Galeria do produto com swipe horizontal' : 'Imagem do produto');
+
+        const imageElements = Array.from(gallery.querySelectorAll('img'));
+        imageElements.forEach((image) => {
+          image.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openImageModal(image.src, image.alt);
+          });
+        });
+
+        const loadedSizes = (await Promise.all(imageElements.map(waitForImageLoad))).filter(Boolean);
+        updateLargestBox(loadedSizes);
+
+        if (expandImageBtn) {
+          expandImageBtn.disabled = false;
+          expandImageBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const firstImage = imageElements[0];
+            openImageModal(firstImage?.src, firstImage?.alt);
+          });
+        }
+      } catch {
+        gallery.innerHTML = '<article class="gallery-item gallery-empty">Não foi possível carregar as imagens deste SKU.</article>';
+        if (expandImageBtn) expandImageBtn.disabled = true;
+      }
+    }
+
+    async function loadSwipePages() {
+      const [catalogHtml, productTextoHtml, productPixHtml, productSimplesHtml] = await Promise.all([
+        fetch('/pages/catalog.html').then((r) => r.text()),
+        fetch('/pages/qr-code-com-texto.html').then((r) => r.text()),
+        fetch('/pages/qr-code-pix.html').then((r) => r.text()),
+        fetch('/pages/qr-code-simples.html').then((r) => r.text())
+      ]);
+
+      pageCatalog.innerHTML = catalogHtml;
+      pageProductTexto.innerHTML = productTextoHtml;
+      pageProductPix.innerHTML = productPixHtml;
+      pageProductSimples.innerHTML = productSimplesHtml;
+
+      catalogLinks = Array.from(document.querySelectorAll('#catalog-links a'));
+
+      document.querySelectorAll('[data-buy-btn="true"]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          openChannelModal(button.dataset.sku || 'SKU');
+        });
+      });
+
+      await Promise.all([
+        hydrateProductPage(pageProductTexto),
+        hydrateProductPage(pageProductPix),
+        hydrateProductPage(pageProductSimples)
+      ]);
+
+      bindDotNavigation();
+    }
+
+    track.style.width = `${pages.length * 100}%`;
+    pages.forEach((page) => {
+      const percent = 100 / pages.length;
+      page.style.width = `${percent}%`;
+      page.style.flex = `0 0 ${percent}%`;
+    });
+
+    setPage(0);
+
+    pagerPrev.addEventListener('click', goPreviousPage);
+    pagerNext.addEventListener('click', goNextPage);
+
+    shell.addEventListener('touchstart', (event) => {
+      startX = event.changedTouches[0].clientX;
+    }, { passive: true });
+
+    shell.addEventListener('touchend', (event) => {
+      const endX = event.changedTouches[0].clientX;
+      const delta = endX - startX;
+      if (delta < -45) goNextPage();
+      if (delta > 45) goPreviousPage();
+    }, { passive: true });
+
+    shell.addEventListener('click', (event) => {
+      if (event.target.closest('a, button, input, textarea, select, label, [role="button"], img')) return;
+      if (!event.target.closest('.page')) return;
+      goNextPage();
+    });
+
+    channelModal.addEventListener('click', (event) => {
+      if (event.target.matches('[data-close-modal="true"]')) closeChannelModal();
+    });
+
+    channelModalClose.addEventListener('click', closeChannelModal);
+    imageModalClose.addEventListener('click', closeImageModal);
+
+    imageModal.addEventListener('click', (event) => {
+      if (event.target.matches('[data-close-image-modal="true"]')) closeImageModal();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !channelModal.hidden) closeChannelModal();
+      if (event.key === 'Escape' && !imageModal.hidden) closeImageModal();
+    });
+
+    loadSwipePages().catch(() => {
+      pageCatalog.innerHTML = '<div class="loading">Não foi possível carregar a página de catálogos.</div>';
+      pageProductTexto.innerHTML = '<div class="loading">Não foi possível carregar a página do produto.</div>';
+      pageProductPix.innerHTML = '<div class="loading">Não foi possível carregar a página do produto.</div>';
+      pageProductSimples.innerHTML = '<div class="loading">Não foi possível carregar a página do produto.</div>';
+    });
+  </script>
+
 </body>
 </html>
