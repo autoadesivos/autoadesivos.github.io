@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de Produtos | AUTOADESIVOS</title>
+  <meta name="description" content="Catálogo visual AUTOADESIVOS: toque em uma miniatura para abrir o produto no marketplace em uma nova aba." />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="AUTO ADESIVOS" />
+  <link rel="canonical" href="https://www.autoadesivos.com/paginacustomizada.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AUTOADESIVOS | Catálogo de Produtos" />
+  <meta property="og:description" content="Miniaturas de produtos com acesso direto ao marketplace." />
+  <meta property="og:url" content="https://www.autoadesivos.com/paginacustomizada.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <style>
+    :root {
+      --card: #171a21;
+      --text: #f5f7fb;
+      --muted: #aeb6c5;
+      --border: #2a3040;
+      --hover: #202635;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      --accent: #4fd1ff;
+      --viewport-gap: 24px;
+      --tile-radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: var(--viewport-gap);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 30%),
+        linear-gradient(180deg, #11141a 0%, #0b0d12 100%);
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      height: min(920px, calc(100dvh - (var(--viewport-gap) * 2)));
+      background: rgba(23, 26, 33, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .catalog-panel {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      padding: 22px 18px 24px;
+    }
+
+    .catalog-panel::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .catalog-hint {
+      margin: 0 0 14px;
+      text-align: center;
+      color: #aeb9d2;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .product-tile {
+      position: relative;
+      display: block;
+      aspect-ratio: 1 / 1;
+      min-height: 0;
+      border: 1px solid #33425f;
+      border-radius: var(--tile-radius);
+      overflow: hidden;
+      text-decoration: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(79,209,255,0.06));
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .product-tile:hover,
+    .product-tile:focus-visible {
+      transform: translateY(-2px);
+      border-color: #5f739d;
+      background: var(--hover);
+      outline: none;
+    }
+
+    .product-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #0f131b;
+      transition: transform 0.22s ease, filter 0.22s ease;
+    }
+
+    .product-tile:hover img,
+    .product-tile:focus-visible img {
+      transform: scale(1.035);
+      filter: brightness(1.08);
+    }
+
+    .tile-cue {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(174, 185, 210, 0.42);
+      border-radius: 10px;
+      background: rgba(15, 19, 27, 0.72);
+      color: #e7edfb;
+      font-size: 15px;
+      line-height: 1;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 480px) {
+      :root { --viewport-gap: 16px; }
+
+      .catalog-panel {
+        padding: 20px 16px 22px;
+      }
+    }
+
+    /* Desktop only: mobile keeps the original narrow card size. */
+    @media (min-width: 900px) {
+      .card {
+        max-width: 1120px;
+        height: min(860px, calc(100dvh - (var(--viewport-gap) * 2)));
+      }
+
+      .catalog-panel {
+        padding: 34px;
+      }
+
+      .catalog-hint {
+        margin-bottom: 18px;
+        font-size: 13px;
+      }
+
+      .catalog-grid {
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 18px;
+      }
+
+      .product-tile {
+        --tile-radius: 18px;
+      }
+
+      .tile-cue {
+        right: 12px;
+        bottom: 12px;
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .card {
+        max-width: 1240px;
+      }
+
+      .catalog-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-label="Catálogo de produtos AUTOADESIVOS">
+    <section class="catalog-panel" aria-label="Miniaturas de produtos">
+      <p class="catalog-hint">
+        Clique ou toque em uma miniatura para abrir o produto no marketplace em uma nova aba.
+      </p>
+
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </section>
+  </main>
+
+  <script>
+    const grid = document.getElementById("catalog-grid");
+
+    const folder = "images/products/FAJARDOGAMES";
+    const marketplaceBase = "https://marketplace.example/produto";
+
+    // Safety limit so the loop cannot run forever.
+    const maxScan = 500;
+
+    function checkImageExists(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+
+        img.src = src;
+      });
+    }
+
+    function createProductTile(index, imgSrc) {
+      const a = document.createElement("a");
+
+      a.className = "product-tile";
+      a.href = `${marketplaceBase}/${index}`;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.setAttribute("aria-label", "Abrir produto no marketplace");
+
+      const img = document.createElement("img");
+      img.src = imgSrc;
+      img.alt = "";
+      img.loading = "lazy";
+
+      const cue = document.createElement("span");
+      cue.className = "tile-cue";
+      cue.setAttribute("aria-hidden", "true");
+      cue.textContent = "↗";
+
+      const sr = document.createElement("span");
+      sr.className = "sr-only";
+      sr.textContent = "Abrir produto no marketplace";
+
+      a.appendChild(img);
+      a.appendChild(cue);
+      a.appendChild(sr);
+
+      return a;
+    }
+
+    async function loadCatalog() {
+      for (let i = 0; i < maxScan; i++) {
+        const imgSrc = `${folder}/${i}.png`;
+        const exists = await checkImageExists(imgSrc);
+
+        if (!exists) {
+          break;
+        }
+
+        const tile = createProductTile(i, imgSrc);
+        grid.appendChild(tile);
+      }
+    }
+
+    loadCatalog();
+  </script>
+</body>
+</html>
