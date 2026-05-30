@@ -36,9 +36,7 @@
       place-items: center;
       padding: var(--viewport-gap);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 30%),
-        linear-gradient(180deg, #11141a 0%, #0b0d12 100%);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 30%), linear-gradient(180deg, #11141a 0%, #0b0d12 100%);
       color: var(--text);
     }
 
@@ -63,16 +61,35 @@
       padding: 22px 18px 24px;
     }
 
-    .catalog-panel::-webkit-scrollbar {
-      width: 0;
-      height: 0;
+    .catalog-panel::-webkit-scrollbar { display: none; }
+
+    .catalog-header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .catalog-header p {
+      margin: 0 0 6px 0;
+      font-size: 1.05rem;
+      color: #8a9ab7;
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .catalog-header h1 {
+      margin: 0;
+      font-size: 3.1rem;
+      line-height: 1;
+      color: #ffffff;
+      font-weight: 900;
+      letter-spacing: -1.2px;
     }
 
     .catalog-hint {
-      margin: 0 0 14px;
+      margin: 0 0 20px;
       text-align: center;
       color: #aeb9d2;
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.45;
     }
 
@@ -80,7 +97,11 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
+
+    .catalog-grid.loaded { opacity: 1; }
 
     .product-tile {
       position: relative;
@@ -152,59 +173,34 @@
 
     @media (max-width: 480px) {
       :root { --viewport-gap: 16px; }
-
-      .catalog-panel {
-        padding: 20px 16px 22px;
-      }
+      .catalog-panel { padding: 20px 16px 22px; }
+      .catalog-header h1 { font-size: 2.55rem; }
     }
 
-    /* Desktop only: mobile keeps the original narrow card size. */
     @media (min-width: 900px) {
-      .card {
-        max-width: 1120px;
-        height: min(860px, calc(100dvh - (var(--viewport-gap) * 2)));
-      }
-
-      .catalog-panel {
-        padding: 34px;
-      }
-
-      .catalog-hint {
-        margin-bottom: 18px;
-        font-size: 13px;
-      }
-
-      .catalog-grid {
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-        gap: 18px;
-      }
-
-      .product-tile {
-        --tile-radius: 18px;
-      }
-
-      .tile-cue {
-        right: 12px;
-        bottom: 12px;
-        width: 34px;
-        height: 34px;
-      }
+      .card { max-width: 1120px; height: min(860px, calc(100dvh - (var(--viewport-gap) * 2))); }
+      .catalog-panel { padding: 34px; }
+      .catalog-grid { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px; }
+      .product-tile { --tile-radius: 18px; }
+      .tile-cue { right: 12px; bottom: 12px; width: 34px; height: 34px; }
+      .catalog-header h1 { font-size: 3.7rem; }
     }
 
     @media (min-width: 1280px) {
-      .card {
-        max-width: 1240px;
-      }
-
-      .catalog-grid {
-        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      }
+      .card { max-width: 1240px; }
+      .catalog-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
     }
   </style>
 </head>
 <body>
   <main class="card" aria-label="Catálogo de produtos AUTOADESIVOS">
     <section class="catalog-panel" aria-label="Miniaturas de produtos">
+
+      <div class="catalog-header">
+        <p>CATÁLOGO</p>
+        <h1>FAJARDOGAMES</h1>
+      </div>
+
       <p class="catalog-hint">
         Clique ou toque em uma miniatura para abrir o produto no marketplace em uma nova aba.
       </p>
@@ -215,27 +211,30 @@
 
   <script>
     const grid = document.getElementById("catalog-grid");
-
     const folder = "images/products/FAJARDOGAMES";
     const marketplaceBase = "https://marketplace.example/produto";
-
-    // Safety limit so the loop cannot run forever.
     const maxScan = 500;
 
-    function checkImageExists(src) {
-      return new Promise((resolve) => {
-        const img = new Image();
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
+    function checkImageExists(src) {
+      return new Promise(resolve => {
+        const img = new Image();
         img.onload = () => resolve(true);
         img.onerror = () => resolve(false);
-
         img.src = src;
       });
     }
 
     function createProductTile(index, imgSrc) {
       const a = document.createElement("a");
-
       a.className = "product-tile";
       a.href = `${marketplaceBase}/${index}`;
       a.target = "_blank";
@@ -245,7 +244,8 @@
       const img = document.createElement("img");
       img.src = imgSrc;
       img.alt = "";
-      img.loading = "lazy";
+      img.loading = index < 12 ? "eager" : "lazy";
+      img.decoding = "async";
 
       const cue = document.createElement("span");
       cue.className = "tile-cue";
@@ -256,25 +256,36 @@
       sr.className = "sr-only";
       sr.textContent = "Abrir produto no marketplace";
 
-      a.appendChild(img);
-      a.appendChild(cue);
-      a.appendChild(sr);
-
+      a.append(img, cue, sr);
       return a;
     }
 
     async function loadCatalog() {
-      for (let i = 0; i < maxScan; i++) {
-        const imgSrc = `${folder}/${i}.png`;
-        const exists = await checkImageExists(imgSrc);
+      grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8a9ab7;font-size:15px;">🔄 Carregando e embaralhando catálogo...</p>`;
 
-        if (!exists) {
-          break;
-        }
+      const checks = Array.from({length: maxScan}, (_, i) => {
+        const src = `${folder}/${i}.png`;
+        return checkImageExists(src).then(exists => ({index: i, src, exists}));
+      });
 
-        const tile = createProductTile(i, imgSrc);
-        grid.appendChild(tile);
+      const results = await Promise.all(checks);
+      let valid = results.filter(r => r.exists);
+
+      if (valid.length === 0) {
+        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:80px;color:#777;">Nenhum produto encontrado.</p>`;
+        return;
       }
+
+      valid = shuffle(valid);
+      grid.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      valid.forEach(({index, src}) => {
+        fragment.appendChild(createProductTile(index, src));
+      });
+
+      grid.appendChild(fragment);
+      grid.classList.add('loaded');
     }
 
     loadCatalog();
