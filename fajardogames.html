@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Catálogo de Produtos | AUTOADESIVOS</title>
-  <meta name="description" content="Catálogo visual AUTOADESIVOS: toque em uma miniatura para abrir o produto no marketplace em uma nova aba." />
+  <meta name="description" content="Catálogo visual AUTOADESIVOS: toque em uma miniatura para ver o produto ampliado e comprar no marketplace." />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="AUTO ADESIVOS" />
   <link rel="canonical" href="https://www.autoadesivos.com/paginacustomizada.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="AUTOADESIVOS | Catálogo de Produtos" />
-  <meta property="og:description" content="Miniaturas de produtos com acesso direto ao marketplace." />
+  <meta property="og:description" content="Miniaturas de produtos com visualização ampliada e botão de compra." />
   <meta property="og:url" content="https://www.autoadesivos.com/paginacustomizada.html" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -23,6 +23,8 @@
       --hover: #202635;
       --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
       --accent: #4fd1ff;
+      --buy: #00d46a;
+      --buy-hover: #00f27a;
       --viewport-gap: 24px;
       --tile-radius: 16px;
     }
@@ -38,6 +40,10 @@
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 30%), linear-gradient(180deg, #11141a 0%, #0b0d12 100%);
       color: var(--text);
+    }
+
+    body.modal-open {
+      overflow: hidden;
     }
 
     .card {
@@ -106,16 +112,19 @@
     .product-tile {
       position: relative;
       display: block;
+      width: 100%;
       aspect-ratio: 1 / 1;
       min-height: 0;
       border: 1px solid #33425f;
       border-radius: var(--tile-radius);
       overflow: hidden;
-      text-decoration: none;
       background: #ffffff;
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
       transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
       -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
     }
 
     .product-tile:hover,
@@ -166,6 +175,113 @@
       backdrop-filter: blur(4px);
     }
 
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(7px);
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal-box {
+      position: relative;
+      width: min(760px, 100%);
+      max-height: calc(100dvh - 36px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      background: #10131a;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      animation: modalIn 0.16s ease-out;
+    }
+
+    @keyframes modalIn {
+      from {
+        transform: scale(0.96);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      background: rgba(0,0,0,0.75);
+      color: #ffffff;
+      font-size: 30px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-close:hover,
+    .modal-close:focus-visible {
+      background: rgba(255,255,255,0.12);
+      outline: none;
+    }
+
+    .modal-image-wrap {
+      width: 100%;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .modal-image {
+      width: 100%;
+      max-height: calc(100dvh - 180px);
+      object-fit: contain;
+      display: block;
+      background: #ffffff;
+    }
+
+    .modal-buy {
+      display: block;
+      width: 100%;
+      padding: 20px 18px;
+      border-radius: 18px;
+      background: var(--buy);
+      color: #041008;
+      text-align: center;
+      text-decoration: none;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1;
+      font-weight: 1000;
+      letter-spacing: 1.5px;
+      box-shadow: 0 14px 34px rgba(0, 212, 106, 0.28);
+      transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .modal-buy:hover,
+    .modal-buy:focus-visible {
+      background: var(--buy-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 18px 42px rgba(0, 212, 106, 0.36);
+      outline: none;
+    }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -180,22 +296,60 @@
 
     @media (max-width: 480px) {
       :root { --viewport-gap: 16px; }
+
       .catalog-panel { padding: 20px 16px 22px; }
+
       .catalog-header h1 { font-size: 2.55rem; }
+
+      .modal {
+        padding: 10px;
+      }
+
+      .modal-box {
+        padding: 10px;
+        border-radius: 18px;
+      }
+
+      .modal-image {
+        max-height: calc(100dvh - 150px);
+      }
+
+      .modal-buy {
+        padding: 18px 14px;
+      }
     }
 
     @media (min-width: 900px) {
-      .card { max-width: 1120px; height: min(860px, calc(100dvh - (var(--viewport-gap) * 2))); }
+      .card {
+        max-width: 1120px;
+        height: min(860px, calc(100dvh - (var(--viewport-gap) * 2)));
+      }
+
       .catalog-panel { padding: 34px; }
-      .catalog-grid { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px; }
+
+      .catalog-grid {
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 18px;
+      }
+
       .product-tile { --tile-radius: 18px; }
-      .tile-cue { right: 12px; bottom: 12px; width: 34px; height: 34px; }
+
+      .tile-cue {
+        right: 12px;
+        bottom: 12px;
+        width: 34px;
+        height: 34px;
+      }
+
       .catalog-header h1 { font-size: 3.7rem; }
     }
 
     @media (min-width: 1280px) {
       .card { max-width: 1240px; }
-      .catalog-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+
+      .catalog-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
     }
   </style>
 </head>
@@ -209,44 +363,93 @@
       </div>
 
       <p class="catalog-hint">
-        Clique ou toque em uma miniatura para abrir o produto no marketplace em uma nova aba.
+        Clique ou toque em uma miniatura para ver o produto ampliado.
       </p>
 
       <div class="catalog-grid" id="catalog-grid"></div>
     </section>
   </main>
 
+  <div class="modal" id="product-modal" role="dialog" aria-modal="true" aria-label="Produto ampliado">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close" type="button" aria-label="Fechar">×</button>
+
+      <div class="modal-image-wrap">
+        <img class="modal-image" id="modal-image" src="" alt="Produto ampliado" />
+      </div>
+
+      <a class="modal-buy" id="modal-buy" href="#" target="_blank" rel="noopener noreferrer">
+        COMPRAR
+      </a>
+    </div>
+  </div>
+
   <script>
     const grid = document.getElementById("catalog-grid");
+
+    const modal = document.getElementById("product-modal");
+    const modalImage = document.getElementById("modal-image");
+    const modalBuy = document.getElementById("modal-buy");
+    const modalClose = document.getElementById("modal-close");
+
     const folder = "images/products/FAJARDOGAMES";
     const marketplaceBase = "https://marketplace.example/produto";
     const maxScan = 500;
 
+    let lastFocusedElement = null;
+
     function shuffle(array) {
       const arr = [...array];
+
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
+
       return arr;
     }
 
     function checkImageExists(src) {
       return new Promise(resolve => {
         const img = new Image();
+
         img.onload = () => resolve(true);
         img.onerror = () => resolve(false);
         img.src = src;
       });
     }
 
+    function openProductModal(index, imgSrc) {
+      lastFocusedElement = document.activeElement;
+
+      modalImage.src = imgSrc;
+      modalImage.alt = `Produto ${index} ampliado`;
+      modalBuy.href = `${marketplaceBase}/${index}`;
+
+      modal.classList.add("is-open");
+      document.body.classList.add("modal-open");
+
+      modalClose.focus();
+    }
+
+    function closeProductModal() {
+      modal.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+
+      modalImage.src = "";
+      modalBuy.href = "#";
+
+      if (lastFocusedElement) {
+        lastFocusedElement.focus();
+      }
+    }
+
     function createProductTile(index, imgSrc) {
-      const a = document.createElement("a");
-      a.className = "product-tile";
-      a.href = `${marketplaceBase}/${index}`;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.setAttribute("aria-label", "Abrir produto no marketplace");
+      const button = document.createElement("button");
+      button.className = "product-tile";
+      button.type = "button";
+      button.setAttribute("aria-label", "Ver produto ampliado");
+      button.addEventListener("click", () => openProductModal(index, imgSrc));
 
       const img = document.createElement("img");
       img.src = imgSrc;
@@ -257,22 +460,22 @@
       const cue = document.createElement("span");
       cue.className = "tile-cue";
       cue.setAttribute("aria-hidden", "true");
-      cue.textContent = "↗";
+      cue.textContent = "🔍";
 
       const sr = document.createElement("span");
       sr.className = "sr-only";
-      sr.textContent = "Abrir produto no marketplace";
+      sr.textContent = "Ver produto ampliado";
 
-      a.append(img, cue, sr);
-      return a;
+      button.append(img, cue, sr);
+      return button;
     }
 
     async function loadCatalog() {
       grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8a9ab7;font-size:15px;">🔄 Carregando e embaralhando catálogo...</p>`;
 
-      const checks = Array.from({length: maxScan}, (_, i) => {
+      const checks = Array.from({ length: maxScan }, (_, i) => {
         const src = `${folder}/${i}.png`;
-        return checkImageExists(src).then(exists => ({index: i, src, exists}));
+        return checkImageExists(src).then(exists => ({ index: i, src, exists }));
       });
 
       const results = await Promise.all(checks);
@@ -284,16 +487,31 @@
       }
 
       valid = shuffle(valid);
-      grid.innerHTML = '';
+      grid.innerHTML = "";
+
       const fragment = document.createDocumentFragment();
 
-      valid.forEach(({index, src}) => {
+      valid.forEach(({ index, src }) => {
         fragment.appendChild(createProductTile(index, src));
       });
 
       grid.appendChild(fragment);
-      grid.classList.add('loaded');
+      grid.classList.add("loaded");
     }
+
+    modalClose.addEventListener("click", closeProductModal);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeProductModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeProductModal();
+      }
+    });
 
     loadCatalog();
   </script>
