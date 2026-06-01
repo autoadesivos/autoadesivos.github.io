@@ -7,6 +7,8 @@
   <meta name="description" content="Catálogo visual AUTOADESIVOS: toque em uma miniatura para ver o produto ampliado e comprar no marketplace." />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="AUTO ADESIVOS" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self';" />
   <link rel="canonical" href="https://www.autoadesivos.com/paginacustomizada.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="AUTOADESIVOS | Catálogo de Produtos" />
@@ -109,6 +111,15 @@
 
     .catalog-grid.loaded { opacity: 1; }
 
+    .catalog-status {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 60px 20px;
+      color: #8a9ab7;
+      font-size: 15px;
+      text-align: center;
+    }
+
     .product-tile {
       position: relative;
       display: block;
@@ -125,6 +136,8 @@
       cursor: pointer;
       padding: 0;
       font: inherit;
+      content-visibility: auto;
+      contain-intrinsic-size: 180px 180px;
     }
 
     .product-tile:hover,
@@ -193,12 +206,13 @@
 
     .modal-box {
       position: relative;
-      width: min(760px, 100%);
+      width: min(1120px, 100%);
       max-height: calc(100dvh - 36px);
       display: flex;
       flex-direction: column;
       gap: 14px;
       padding: 16px;
+      overflow-y: auto;
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 22px;
       background: #10131a;
@@ -240,10 +254,9 @@
     }
 
     .modal-image-wrap {
+      position: relative;
       width: 100%;
       min-height: 0;
-      display: grid;
-      place-items: center;
       border-radius: 16px;
       background: #ffffff;
       overflow: hidden;
@@ -251,10 +264,94 @@
 
     .modal-image {
       width: 100%;
-      max-height: calc(100dvh - 180px);
+      height: min(68dvh, 680px);
+      min-height: 260px;
       object-fit: contain;
       display: block;
       background: #ffffff;
+    }
+
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      z-index: 3;
+      width: 42px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      background: rgba(0,0,0,0.62);
+      color: #ffffff;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      transform: translateY(-50%);
+    }
+
+    .modal-nav.prev { left: 10px; }
+    .modal-nav.next { right: 10px; }
+
+    .modal-nav:hover,
+    .modal-nav:focus-visible {
+      background: rgba(0,0,0,0.82);
+      outline: none;
+    }
+
+    .modal-nav[disabled] {
+      display: none;
+    }
+
+    .modal-caption {
+      min-height: 22px;
+      color: #d9e2f4;
+      font-size: 14px;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .modal-control-track,
+    .modal-size-track,
+    .modal-color-track {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .modal-size-chip {
+      min-width: 64px;
+      padding: 8px 10px;
+      border: 1px solid #34445f;
+      border-radius: 999px;
+      background: #171d29;
+      color: #dbe6f7;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+    }
+
+    .modal-size-chip.is-active {
+      border-color: var(--accent);
+      background: #203246;
+      color: #ffffff;
+    }
+
+    .modal-color-chip {
+      width: 34px;
+      height: 34px;
+      border: 2px solid #34445f;
+      border-radius: 999px;
+      background: var(--swatch, #111111);
+      cursor: pointer;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.74);
+    }
+
+    .modal-color-chip.is-active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(79,209,255,0.28), inset 0 0 0 3px rgba(255,255,255,0.84);
     }
 
     .modal-buy {
@@ -280,6 +377,13 @@
       transform: translateY(-1px);
       box-shadow: 0 18px 42px rgba(0, 212, 106, 0.36);
       outline: none;
+    }
+
+    .modal-buy.is-disabled {
+      pointer-events: none;
+      background: #667085;
+      color: #161b24;
+      box-shadow: none;
     }
 
     .sr-only {
@@ -310,9 +414,7 @@
         border-radius: 18px;
       }
 
-      .modal-image {
-        max-height: calc(100dvh - 150px);
-      }
+      .modal-image { height: min(54dvh, 520px); }
 
       .modal-buy {
         padding: 18px 14px;
@@ -375,8 +477,14 @@
       <button class="modal-close" id="modal-close" type="button" aria-label="Fechar">×</button>
 
       <div class="modal-image-wrap">
+        <button class="modal-nav prev" id="modal-prev" type="button" aria-label="Imagem anterior">&lsaquo;</button>
         <img class="modal-image" id="modal-image" src="" alt="Produto ampliado" />
+        <button class="modal-nav next" id="modal-next" type="button" aria-label="Proxima imagem">&rsaquo;</button>
       </div>
+
+      <div class="modal-caption" id="modal-caption"></div>
+      <div class="modal-size-track" id="modal-size-track" aria-label="Tamanhos disponiveis"></div>
+      <div class="modal-color-track" id="modal-color-track" aria-label="Cores disponiveis"></div>
 
       <a class="modal-buy" id="modal-buy" href="#" target="_blank" rel="noopener noreferrer">
         COMPRAR
@@ -391,12 +499,36 @@
     const modalImage = document.getElementById("modal-image");
     const modalBuy = document.getElementById("modal-buy");
     const modalClose = document.getElementById("modal-close");
+    const modalPrev = document.getElementById("modal-prev");
+    const modalNext = document.getElementById("modal-next");
+    const modalCaption = document.getElementById("modal-caption");
+    const modalSizeTrack = document.getElementById("modal-size-track");
+    const modalColorTrack = document.getElementById("modal-color-track");
 
-    const folder = "images/products/FAJARDOGAMES";
-    const marketplaceBase = "https://marketplace.example/produto";
-    const maxScan = 500;
+    const schemeUrl = "autoadesivos-product-scheme.json";
+    const generatedProductRoot = "images/products/FAJARDOGAMES/";
+    const sizeOrder = ["minor", "major", "MINOR", "MAJOR"];
+    const sizeLabels = {
+      "minor": "Pequeno",
+      "major": "Médio",
+      "MINOR": "Grande",
+      "MAJOR": "Gigante"
+    };
+    const colorSwatches = {
+      "PRETO": "#111111",
+      "CINZA ESCURO": "#444444",
+      "CINZA CLARO": "#aaaaaa",
+      "VERMELHO": "#dc2626",
+      "BRANCO": "#ffffff"
+    };
 
     let lastFocusedElement = null;
+    let products = [];
+    let activeProduct = null;
+    let activeSlideIndex = 0;
+    let activeColorName = "PRETO";
+    let schemeAssetVersion = "";
+    let touchStartX = 0;
 
     function shuffle(array) {
       const arr = [...array];
@@ -409,22 +541,394 @@
       return arr;
     }
 
-    function checkImageExists(src) {
-      return new Promise(resolve => {
-        const img = new Image();
+    function createStatusMessage(text) {
+      const message = document.createElement("p");
+      message.className = "catalog-status";
+      message.textContent = text;
+      return message;
+    }
 
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = src;
+    function normalizeAssetPath(path) {
+      return path.replace(/\\/g, "/").replace(/^\/+/, "");
+    }
+
+    function versionAssetPath(path) {
+      if (!schemeAssetVersion) {
+        return path;
+      }
+
+      const separator = path.includes("?") ? "&" : "?";
+      return `${path}${separator}v=${encodeURIComponent(schemeAssetVersion)}`;
+    }
+
+    function readValue(source, name) {
+      if (!source) {
+        return "";
+      }
+
+      if (typeof source.getAttribute === "function") {
+        return source.getAttribute(name) || "";
+      }
+
+      return source[name] == null ? "" : String(source[name]);
+    }
+
+    function parseRedirects(sizeElement) {
+      if (Array.isArray(sizeElement.marketplaceRedirects)) {
+        return sizeElement.marketplaceRedirects
+          .map(redirect => ({
+            slot: readValue(redirect, "slot"),
+            marketplace: readValue(redirect, "marketplace"),
+            url: readValue(redirect, "url")
+          }))
+          .filter(redirect => redirect.url.trim().length > 0);
+      }
+
+      return Array.from(sizeElement.getElementsByTagName("redirect"))
+        .map(redirect => ({
+          slot: readValue(redirect, "slot"),
+          marketplace: readValue(redirect, "marketplace"),
+          url: readValue(redirect, "url")
+        }))
+        .filter(redirect => redirect.url.trim().length > 0);
+    }
+
+    function parseImage(imageElement) {
+      const path = normalizeAssetPath(readValue(imageElement, "path"));
+      if (!path || !path.startsWith(generatedProductRoot)) {
+        return null;
+      }
+
+      return {
+        src: versionAssetPath(encodeURI(path)),
+        color: readValue(imageElement, "color"),
+        widthCm: readValue(imageElement, "widthCm"),
+        heightCm: readValue(imageElement, "heightCm"),
+        dimensionMarker: readValue(imageElement, "dimensionMarker").toLowerCase() === "true"
+      };
+    }
+
+    function chooseSizeImage(images, colorName = activeColorName) {
+      const wanted = (colorName || "").toUpperCase();
+      return images.find(image => image.color.toUpperCase() === wanted) ||
+        images.find(image => image.color.toUpperCase() === "PRETO") ||
+        images[0] ||
+        null;
+    }
+
+    function chooseDimensionImage(slide, colorName = activeColorName) {
+      return chooseSizeImage(slide.dimensionImages, colorName);
+    }
+
+    function parseSize(sizeElement, productImages = []) {
+      const isJsonSize = !sizeElement.children;
+      const allImages = isJsonSize
+        ? [
+            ...((Array.isArray(sizeElement.images) ? sizeElement.images : [])),
+            ...((Array.isArray(sizeElement.dimensionImages) ? sizeElement.dimensionImages : []))
+          ].map(parseImage).filter(Boolean)
+        : Array.from(sizeElement.children)
+          .filter(child => child.tagName === "image")
+          .map(parseImage)
+          .filter(Boolean);
+      const images = productImages.length > 0
+        ? productImages
+        : allImages.filter(image => !image.dimensionMarker);
+      const dimensionImages = allImages.filter(image => image.dimensionMarker);
+      if (images.length === 0 && dimensionImages.length === 0) {
+        return null;
+      }
+
+      return {
+        name: readValue(sizeElement, "name"),
+        label: readValue(sizeElement, "displayName") || sizeLabels[readValue(sizeElement, "name")] || readValue(sizeElement, "name"),
+        capCm: readValue(sizeElement, "capCm"),
+        images,
+        dimensionImages,
+        redirects: parseRedirects(sizeElement)
+      };
+    }
+
+    function sortSizes(sizes) {
+      return sizes.sort((a, b) => {
+        const capDiff = (Number(a.capCm) || 0) - (Number(b.capCm) || 0);
+        if (capDiff !== 0) {
+          return capDiff;
+        }
+
+        const aIndex = sizeOrder.indexOf(a.name);
+        const bIndex = sizeOrder.indexOf(b.name);
+        return (aIndex < 0 ? 99 : aIndex) - (bIndex < 0 ? 99 : bIndex);
       });
     }
 
-    function openProductModal(index, imgSrc) {
-      lastFocusedElement = document.activeElement;
+    function chooseProductThumb(slides) {
+      const slide = slides.find(slide => slide.name === "major") ||
+        slides.find(slide => slide.name === "MINOR") ||
+        slides[0];
+      return chooseSizeImage(slide.images, "PRETO") || chooseDimensionImage(slide, "PRETO");
+    }
 
-      modalImage.src = imgSrc;
-      modalImage.alt = `Produto ${index} ampliado`;
-      modalBuy.href = `${marketplaceBase}/${index}`;
+    function parseProduct(productElement, index) {
+      const isJsonProduct = !productElement.children;
+      const productImages = isJsonProduct && Array.isArray(productElement.images)
+        ? productElement.images.map(parseImage).filter(Boolean)
+        : [];
+      const sizeElements = isJsonProduct
+        ? (Array.isArray(productElement.sizes) ? productElement.sizes : [])
+        : Array.from(productElement.children).find(child => child.tagName === "sizes")?.children || [];
+      if (!sizeElements || sizeElements.length === 0) {
+        return null;
+      }
+
+      const slides = sortSizes(Array.from(sizeElements)
+        .filter(child => isJsonProduct || child.tagName === "size")
+        .map(child => parseSize(child, productImages))
+        .filter(Boolean));
+
+      if (slides.length === 0) {
+        return null;
+      }
+
+      const title = isJsonProduct
+        ? (productElement.title || `Produto ${index + 1}`)
+        : (Array.from(productElement.children).find(item => item.tagName === "title")?.textContent.trim() || `Produto ${index + 1}`);
+      return {
+        id: readValue(productElement, "id") || `produto-${index + 1}`,
+        label: title,
+        thumb: chooseProductThumb(slides).src,
+        slides
+      };
+    }
+
+    function loadSchemeText() {
+      if (typeof fetch === "function") {
+        return fetch(`${schemeUrl}?v=${Date.now()}`, { cache: "no-store" }).then(response => {
+          if (!response.ok) {
+            throw new Error(`Scheme HTTP ${response.status}`);
+          }
+
+          return response.text();
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        const request = new XMLHttpRequest();
+        request.open("GET", `${schemeUrl}?v=${Date.now()}`);
+        request.onload = () => {
+          if (request.status >= 200 && request.status < 300) {
+            resolve(request.responseText);
+            return;
+          }
+
+          reject(new Error(`Scheme HTTP ${request.status}`));
+        };
+        request.onerror = () => reject(new Error("Scheme request failed"));
+        request.send();
+      });
+    }
+
+    async function fetchProducts() {
+      const scheme = JSON.parse(await loadSchemeText());
+      schemeAssetVersion = scheme.generatedUtc ||
+        scheme.version ||
+        "";
+
+      return (Array.isArray(scheme.products) ? scheme.products : [])
+        .map(parseProduct)
+        .filter(Boolean);
+    }
+
+    function currentSlide() {
+      return activeProduct ? activeProduct.slides[activeSlideIndex] : null;
+    }
+
+    function normalizeColorName(colorName) {
+      return (colorName || "").trim().toUpperCase();
+    }
+
+    function getAvailableColors(slide) {
+      const colorImages = slide.images.length > 0 ? slide.images : slide.dimensionImages;
+      return colorImages
+        .map(image => image.color)
+        .filter(Boolean)
+        .filter((color, index, colors) => colors.findIndex(item => normalizeColorName(item) === normalizeColorName(color)) === index);
+    }
+
+    function chooseProductColor(product, preferredColor = activeColorName) {
+      for (const slide of product.slides) {
+        const image = chooseSizeImage(slide.images, preferredColor) || chooseDimensionImage(slide, preferredColor);
+        if (image) {
+          return image.color;
+        }
+      }
+
+      return preferredColor;
+    }
+
+    function chooseModalImage(slide) {
+      return chooseDimensionImage(slide, activeColorName) ||
+        chooseSizeImage(slide.images, activeColorName) ||
+        chooseDimensionImage(slide) ||
+        chooseSizeImage(slide.images);
+    }
+
+    function formatSlideCaption(product, slide, image) {
+      const pieces = [product.label, slide.label || slide.name];
+      if (image && image.widthCm && image.heightCm) {
+        pieces.push(`${image.widthCm}cm x ${image.heightCm}cm`);
+      }
+
+      return pieces.join(" - ");
+    }
+
+    function setBuyLink(slide) {
+      const redirect = slide.redirects[0];
+      if (redirect && redirect.url) {
+        modalBuy.href = redirect.url;
+        modalBuy.textContent = "COMPRAR";
+        modalBuy.classList.remove("is-disabled");
+        modalBuy.removeAttribute("aria-disabled");
+        return;
+      }
+
+      modalBuy.removeAttribute("href");
+      modalBuy.textContent = "EM BREVE";
+      modalBuy.classList.add("is-disabled");
+      modalBuy.setAttribute("aria-disabled", "true");
+    }
+
+    function refreshProductThumbs() {
+      document.querySelectorAll(".product-tile").forEach(tile => {
+        const product = products.find(item => item.id === tile.dataset.productId);
+        const img = tile.querySelector("img");
+        if (!product || !img) {
+          return;
+        }
+
+        const thumb = chooseProductThumb(product);
+        if (thumb) {
+          product.thumb = thumb.src;
+          img.src = thumb.src;
+        }
+      });
+    }
+
+    function renderSizeChips() {
+      if (!activeProduct) {
+        modalSizeTrack.replaceChildren();
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      activeProduct.slides.forEach((slide, index) => {
+        const chip = document.createElement("button");
+        chip.className = "modal-size-chip";
+        chip.type = "button";
+        chip.textContent = slide.label || slide.name;
+        chip.setAttribute("aria-label", `Ver tamanho ${slide.label || slide.name}`);
+        if (index === activeSlideIndex) {
+          chip.classList.add("is-active");
+        }
+
+        chip.addEventListener("click", () => {
+          const nextIndex = activeProduct.slides.findIndex(item => item.name === slide.name);
+          activeSlideIndex = nextIndex >= 0 ? nextIndex : index;
+          const nextSlide = currentSlide();
+          if (nextSlide && !chooseSizeImage(nextSlide.images, activeColorName)) {
+            const fallback = chooseSizeImage(nextSlide.images);
+            if (fallback) {
+              activeColorName = fallback.color;
+            }
+          }
+
+          renderModalSlide();
+        });
+        fragment.appendChild(chip);
+      });
+
+      modalSizeTrack.replaceChildren(fragment);
+    }
+
+    function renderColorChips(slide) {
+      const colors = getAvailableColors(slide);
+      if (colors.length === 0) {
+        modalColorTrack.replaceChildren();
+        return;
+      }
+
+      const selected = chooseSizeImage(slide.images, activeColorName) || chooseSizeImage(slide.images);
+      if (selected) {
+        activeColorName = selected.color;
+      }
+
+      const fragment = document.createDocumentFragment();
+      colors.forEach(color => {
+        const chip = document.createElement("button");
+        chip.className = "modal-color-chip";
+        chip.type = "button";
+        chip.title = color;
+        chip.setAttribute("aria-label", `Ver cor ${color}`);
+        chip.style.setProperty("--swatch", colorSwatches[normalizeColorName(color)] || "#111111");
+        if (normalizeColorName(color) === normalizeColorName(activeColorName)) {
+          chip.classList.add("is-active");
+        }
+
+        chip.addEventListener("click", () => {
+          activeColorName = color;
+          const image = chooseModalImage(slide);
+          if (image) {
+            modalImage.src = image.src;
+            modalImage.alt = `${activeProduct.label} ${slide.label || slide.name}`;
+            modalCaption.textContent = formatSlideCaption(activeProduct, slide, image);
+          }
+
+          refreshProductThumbs();
+          renderColorChips(slide);
+        });
+        fragment.appendChild(chip);
+      });
+
+      modalColorTrack.replaceChildren(fragment);
+    }
+
+    function renderModalSlide() {
+      if (!activeProduct) {
+        return;
+      }
+
+      const slide = activeProduct.slides[activeSlideIndex];
+      const image = chooseModalImage(slide);
+      if (!image) {
+        return;
+      }
+
+      modalImage.src = image.src;
+      modalImage.alt = `${activeProduct.label} ${slide.label || slide.name}`;
+      modalCaption.textContent = formatSlideCaption(activeProduct, slide, image);
+      modalPrev.disabled = activeProduct.slides.length < 2;
+      modalNext.disabled = activeProduct.slides.length < 2;
+      setBuyLink(slide);
+      renderSizeChips();
+      renderColorChips(slide);
+    }
+
+    function moveSlide(direction) {
+      if (!activeProduct || activeProduct.slides.length < 2) {
+        return;
+      }
+
+      activeSlideIndex = (activeSlideIndex + direction + activeProduct.slides.length) % activeProduct.slides.length;
+      renderModalSlide();
+    }
+
+    function openProductModal(product) {
+      lastFocusedElement = document.activeElement;
+      activeProduct = product;
+      activeSlideIndex = 0;
+      activeColorName = chooseProductColor(product, activeColorName);
+
+      renderModalSlide();
 
       modal.classList.add("is-open");
       document.body.classList.add("modal-open");
@@ -437,25 +941,33 @@
       document.body.classList.remove("modal-open");
 
       modalImage.src = "";
-      modalBuy.href = "#";
+      modalCaption.textContent = "";
+      modalSizeTrack.replaceChildren();
+      modalColorTrack.replaceChildren();
+      activeProduct = null;
+      activeSlideIndex = 0;
 
       if (lastFocusedElement) {
         lastFocusedElement.focus();
       }
     }
 
-    function createProductTile(index, imgSrc) {
+    function createProductTile(product, position) {
       const button = document.createElement("button");
       button.className = "product-tile";
       button.type = "button";
-      button.setAttribute("aria-label", "Ver produto ampliado");
-      button.addEventListener("click", () => openProductModal(index, imgSrc));
+      button.dataset.productId = product.id;
+      button.setAttribute("aria-label", `Ver ${product.label} ampliado`);
+      button.addEventListener("click", () => openProductModal(product));
 
       const img = document.createElement("img");
-      img.src = imgSrc;
+      img.src = product.thumb;
       img.alt = "";
-      img.loading = index < 12 ? "eager" : "lazy";
+      img.width = 520;
+      img.height = 520;
+      img.loading = position < 8 ? "eager" : "lazy";
       img.decoding = "async";
+      img.fetchPriority = position < 4 ? "high" : "low";
 
       const cue = document.createElement("span");
       cue.className = "tile-cue";
@@ -464,42 +976,45 @@
 
       const sr = document.createElement("span");
       sr.className = "sr-only";
-      sr.textContent = "Ver produto ampliado";
+      sr.textContent = `Ver ${product.label} ampliado`;
 
       button.append(img, cue, sr);
       return button;
     }
 
     async function loadCatalog() {
-      grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8a9ab7;font-size:15px;">🔄 Carregando e embaralhando catálogo...</p>`;
+      grid.classList.remove("loaded");
+      grid.replaceChildren(createStatusMessage("Carregando catálogo..."));
 
-      const checks = Array.from({ length: maxScan }, (_, i) => {
-        const src = `${folder}/${i}.png`;
-        return checkImageExists(src).then(exists => ({ index: i, src, exists }));
-      });
-
-      const results = await Promise.all(checks);
-      let valid = results.filter(r => r.exists);
-
-      if (valid.length === 0) {
-        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:80px;color:#777;">Nenhum produto encontrado.</p>`;
+      try {
+        products = await fetchProducts();
+      } catch (error) {
+        grid.replaceChildren(createStatusMessage("Nenhum produto processado ainda."));
+        grid.classList.add("loaded");
         return;
       }
 
-      valid = shuffle(valid);
-      grid.innerHTML = "";
+      const shuffledProducts = shuffle(products);
+
+      if (shuffledProducts.length === 0) {
+        grid.replaceChildren(createStatusMessage("Nenhum produto processado ainda."));
+        grid.classList.add("loaded");
+        return;
+      }
 
       const fragment = document.createDocumentFragment();
 
-      valid.forEach(({ index, src }) => {
-        fragment.appendChild(createProductTile(index, src));
+      shuffledProducts.forEach((product, position) => {
+        fragment.appendChild(createProductTile(product, position));
       });
 
-      grid.appendChild(fragment);
+      grid.replaceChildren(fragment);
       grid.classList.add("loaded");
     }
 
     modalClose.addEventListener("click", closeProductModal);
+    modalPrev.addEventListener("click", () => moveSlide(-1));
+    modalNext.addEventListener("click", () => moveSlide(1));
 
     modal.addEventListener("click", event => {
       if (event.target === modal) {
@@ -511,7 +1026,28 @@
       if (event.key === "Escape" && modal.classList.contains("is-open")) {
         closeProductModal();
       }
+
+      if (event.key === "ArrowLeft" && modal.classList.contains("is-open")) {
+        moveSlide(-1);
+      }
+
+      if (event.key === "ArrowRight" && modal.classList.contains("is-open")) {
+        moveSlide(1);
+      }
     });
+
+    modalImage.addEventListener("touchstart", event => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+
+    modalImage.addEventListener("touchend", event => {
+      const deltaX = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaX) < 36) {
+        return;
+      }
+
+      moveSlide(deltaX > 0 ? -1 : 1);
+    }, { passive: true });
 
     loadCatalog();
   </script>
