@@ -4,3 +4,4 @@ myrepo_deploy.pub
 *.key
 .env
 .env.*
+images/products/*/imported-sources/

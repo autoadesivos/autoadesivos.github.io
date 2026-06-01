@@ -727,11 +727,11 @@
       });
     }
 
-    function chooseProductThumb(slides) {
+    function chooseProductThumb(slides, colorName = "PRETO") {
       const slide = slides.find(slide => slide.name === "major") ||
         slides.find(slide => slide.name === "MINOR") ||
         slides[0];
-      return createThumbnailImage(chooseSizeImage(slide.images, "PRETO") || chooseDimensionImage(slide, "PRETO"));
+      return createThumbnailImage(chooseSizeImage(slide.images, colorName) || chooseDimensionImage(slide, colorName));
     }
 
     function parseProduct(productElement, index) {
@@ -869,7 +869,7 @@
       modalBuy.setAttribute("aria-disabled", "true");
     }
 
-    function refreshProductThumbs() {
+    function refreshProductThumbs(colorName = activeColorName) {
       document.querySelectorAll(".product-tile").forEach(tile => {
         const product = products.find(item => item.id === tile.dataset.productId);
         const img = tile.querySelector("img");
@@ -877,7 +877,7 @@
           return;
         }
 
-        const thumb = chooseProductThumb(product);
+        const thumb = chooseProductThumb(product.slides, colorName);
         if (thumb) {
           product.thumb = thumb.src;
           product.thumbFallback = thumb.fallbackSrc || thumb.src;
@@ -923,6 +923,15 @@
       modalSizeTrack.replaceChildren(fragment);
     }
 
+    function updateColorChipSelection(colorName) {
+      const selectedColor = normalizeColorName(colorName);
+      modalColorTrack.querySelectorAll(".modal-color-chip").forEach(chip => {
+        const isActive = normalizeColorName(chip.dataset.color) === selectedColor;
+        chip.classList.toggle("is-active", isActive);
+        chip.setAttribute("aria-pressed", String(isActive));
+      });
+    }
+
     function renderColorChips(slide) {
       const colors = getAvailableColors(slide);
       if (colors.length === 0) {
@@ -941,14 +950,19 @@
         chip.className = "modal-color-chip";
         chip.type = "button";
         chip.title = color;
+        chip.dataset.color = color;
         chip.setAttribute("aria-label", `Ver cor ${color}`);
         chip.style.setProperty("--swatch", colorSwatches[normalizeColorName(color)] || "#111111");
-        if (normalizeColorName(color) === normalizeColorName(activeColorName)) {
+        const isActive = normalizeColorName(color) === normalizeColorName(activeColorName);
+        chip.setAttribute("aria-pressed", String(isActive));
+        if (isActive) {
           chip.classList.add("is-active");
         }
 
         chip.addEventListener("click", () => {
           activeColorName = color;
+          updateColorChipSelection(color);
+
           const image = chooseModalImage(slide);
           if (image) {
             modalImage.src = image.src;
@@ -956,8 +970,7 @@
             modalCaption.textContent = formatSlideCaption(activeProduct, slide, image);
           }
 
-          refreshProductThumbs();
-          renderColorChips(slide);
+          window.setTimeout(() => refreshProductThumbs(activeColorName), 0);
         });
         fragment.appendChild(chip);
       });
