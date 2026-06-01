@@ -1,0 +1,6 @@
+myrepo_deploy
+myrepo_deploy.pub
+*.pem
+*.key
+.env
+.env.*
