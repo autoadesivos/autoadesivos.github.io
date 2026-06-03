@@ -759,13 +759,30 @@ async function ensureFajardoCatalog() {
   state.fajardoProducts = parseFajardoCatalog(scheme);
 }
 
+function normalizeTabName(tabName) {
+  const normalized = String(tabName || "").trim().toLowerCase().replace(/^#/, "");
+  return normalized === "fajardogames" || normalized === "youtube" ? "fajardogames" : "automotive";
+}
+
+function getInitialTabName() {
+  const params = new URLSearchParams(window.location.search);
+  return normalizeTabName(params.get("tab") || window.location.hash);
+}
+
+function syncTabUrl(tabName) {
+  const url = new URL(window.location.href);
+  url.hash = normalizeTabName(tabName) === "fajardogames" ? "fajardogames" : "";
+  window.history.replaceState(null, "", url);
+}
+
 async function activateTab(tabName) {
-  state.activeTab = tabName;
+  const activeTabName = normalizeTabName(tabName);
+  state.activeTab = activeTabName;
   closeModelMenu();
   renderTabs();
 
   try {
-    if (tabName === "automotive") {
+    if (activeTabName === "automotive") {
       els.brandPanel.classList.remove("is-hidden");
       els.viewerPanel.classList.remove("is-wide");
       await ensureAutomotiveCatalog();
@@ -1071,7 +1088,10 @@ function moveModal(direction) {
 }
 
 els.tabs.forEach(tab => {
-  tab.addEventListener("click", () => activateTab(tab.dataset.tab));
+  tab.addEventListener("click", () => {
+    syncTabUrl(tab.dataset.tab);
+    activateTab(tab.dataset.tab);
+  });
 });
 
 els.modalClose.addEventListener("click", closeProductModal);
@@ -1157,4 +1177,4 @@ els.modalImageWrap.addEventListener("touchend", event => {
 window.addEventListener("resize", closeModelMenu);
 window.addEventListener("scroll", closeModelMenu, true);
 
-activateTab("automotive");
+activateTab(getInitialTabName());
