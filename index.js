@@ -92,7 +92,7 @@ function createBrandFlag(brandName) {
   return flag;
 }
 
-function createBrandLabel(brandName, className) {
+function createBrandLabel(brandName, className, displayName = brandName) {
   const label = document.createElement("span");
   label.className = className;
 
@@ -102,13 +102,20 @@ function createBrandLabel(brandName, className) {
   }
 
   const text = document.createElement("span");
-  text.textContent = brandName;
+  text.textContent = displayName;
+  if (displayName !== brandName) {
+    text.title = brandName;
+  }
   label.appendChild(text);
   return label;
 }
 
 function formatBrandName(brandName) {
   return brandName;
+}
+
+function formatBrandPanelName(brandName) {
+  return brandName === "Volkswagen" ? "VW" : brandName;
 }
 
 function setCatalogBrandTitle(brandName, modelName) {
@@ -531,7 +538,7 @@ function renderBrandList() {
     button.classList.toggle("is-active", brand.name === state.selectedBrandName);
     button.addEventListener("click", () => openModelMenu(brand, button));
 
-    const name = createBrandLabel(brand.name, "brand-name");
+    const name = createBrandLabel(brand.name, "brand-name", formatBrandPanelName(brand.name));
 
     const meta = document.createElement("span");
     meta.className = "brand-meta";
