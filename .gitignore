@@ -5,3 +5,6 @@ myrepo_deploy.pub
 .env
 .env.*
 images/products/*/imported-sources/
+images/*.jpg
+images/products/FAJARDOGAMES/*.zip
+mass_update_media_info_*.xlsx

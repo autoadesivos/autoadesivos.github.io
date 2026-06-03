@@ -1,25 +1,78 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' https://cf.shopee.com.br data:; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests;" />
+  <meta name="description" content="Catálogo AUTOADESIVOS por categoria, marca e modelo." />
   <meta name="referrer" content="no-referrer" />
-  <title>AUTOADESIVOS • FAJARDOGAMES</title>
-
-  <!-- INSTANT REDIRECT -->
-  <meta http-equiv="refresh" content="0; url=fajardogames.html" />
+  <title>AUTOADESIVOS | Catálogos</title>
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <div class="container">
-    <p class="small">CATÁLOGO</p>
-    <h1>FAJARDOGAMES</h1>
-    <div class="loading">
-      <div class="spinner"></div><br>
-      Redirecionando para o catálogo...
+  <main class="app-shell" aria-label="Catálogos AUTOADESIVOS">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="eyebrow">CATÁLOGOS</span>
+        <h1>AUTOADESIVOS</h1>
+      </div>
+
+      <nav class="tabs" aria-label="Categorias de catálogo">
+        <button class="tab is-active" type="button" data-tab="automotive" aria-selected="true">AUTOMOTIVOS</button>
+        <button class="tab" type="button" data-tab="fajardogames" aria-selected="false">FAJARDOGAMES</button>
+      </nav>
+    </header>
+
+    <section class="catalog-layout">
+      <aside class="brand-panel" id="brand-panel" aria-label="Marcas automotivas">
+        <div class="panel-title">
+          <span>Marcas</span>
+          <strong id="brand-count">0</strong>
+        </div>
+        <div class="brand-list" id="brand-list"></div>
+      </aside>
+
+      <section class="viewer-panel" aria-label="Produtos do catálogo">
+        <div class="viewer-toolbar">
+          <div>
+            <span class="eyebrow compact" id="catalog-kicker">AUTOMOTIVOS</span>
+            <h2 id="catalog-title">Carregando catálogo</h2>
+          </div>
+          <p class="product-count" id="product-count">0 produtos</p>
+        </div>
+
+        <div class="catalog-grid" id="catalog-grid" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <div class="model-menu" id="model-menu" role="menu" aria-hidden="true"></div>
+
+  <div class="modal" id="product-modal" role="dialog" aria-modal="true" aria-label="Produto ampliado">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close" type="button" aria-label="Fechar">×</button>
+
+      <div class="modal-image-wrap" id="modal-image-wrap" tabindex="0" aria-label="Alternar zoom da imagem">
+        <button class="modal-nav prev" id="modal-prev" type="button" aria-label="Imagem anterior">&lsaquo;</button>
+        <img class="modal-image" id="modal-image" src="" alt="Produto ampliado" />
+        <button class="modal-nav next" id="modal-next" type="button" aria-label="Próxima imagem">&rsaquo;</button>
+      </div>
+
+      <div class="modal-content">
+        <span class="modal-kicker" id="modal-kicker"></span>
+        <h3 id="modal-title"></h3>
+        <p id="modal-description"></p>
+        <div class="modal-meta" id="modal-meta"></div>
+        <div class="modal-track" id="modal-size-track" aria-label="Tamanhos disponíveis"></div>
+        <div class="modal-track" id="modal-color-track" aria-label="Cores disponíveis"></div>
+        <div class="modal-track text-track" id="modal-variation-track" aria-label="Variações disponíveis"></div>
+        <div class="modal-actions">
+          <button class="buy-button" id="modal-buy" type="button" hidden>COMPRAR</button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <script src="index.js" defer></script>
 </body>
 </html>
-

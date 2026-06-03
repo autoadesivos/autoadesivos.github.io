@@ -1,0 +1,76 @@
+{
+  "brands": [
+    {
+      "Name": "Chevrolet",
+      "Models": [
+        "Astra",
+        "Celta",
+        "Corsa",
+        "Corsa Classic",
+        "Cruze",
+        "Meriva",
+        "Montana",
+        "Onix",
+        "Prisma"
+      ]
+    },
+    {
+      "Name": "Volkswagen",
+      "Models": [
+        "Fox",
+        "Gol"
+      ]
+    },
+    {
+      "Name": "Fiat",
+      "Models": [
+        "Palio",
+        "Palio Weekend",
+        "Uno",
+        "Uno Mille"
+      ]
+    },
+    {
+      "Name": "Ford",
+      "Models": [
+        "Fiesta",
+        "Fiesta Rocam"
+      ]
+    },
+    {
+      "Name": "Honda",
+      "Models": [
+        "Civic"
+      ]
+    },
+    {
+      "Name": "Peugeot",
+      "Models": [
+        "206",
+        "207"
+      ]
+    },
+    {
+      "Name": "Renault",
+      "Models": [
+        "Logan"
+      ]
+    },
+    {
+      "Name": "Hyundai",
+      "Models": [
+        "HB20"
+      ]
+    },
+    {
+      "Name": "Kia",
+      "Models": [
+        "Picanto"
+      ]
+    },
+    {
+      "Name": "Citro\u00EBn",
+      "Models": []
+    }
+  ]
+}
