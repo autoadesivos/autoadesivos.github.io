@@ -353,7 +353,8 @@ function parseAutomotiveCatalog(catalog, marketplaceLinks) {
         productCount: models.reduce((total, model) => total + model.products.length, 0)
       };
     })
-    .filter(brand => brand.name);
+    .filter(brand => brand.name)
+    .sort((a, b) => b.productCount - a.productCount || a.name.localeCompare(b.name, "pt-BR"));
 }
 
 function parseImage(imageElement) {

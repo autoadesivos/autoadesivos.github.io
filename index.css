@@ -298,6 +298,23 @@ h1 {
   grid-column: 1 / -1;
 }
 
+.viewer-panel.is-wide .viewer-toolbar {
+  position: relative;
+  justify-content: center;
+  text-align: center;
+}
+
+.viewer-panel.is-wide .viewer-toolbar > div {
+  display: grid;
+  justify-items: center;
+}
+
+.viewer-panel.is-wide .product-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .viewer-toolbar {
   display: flex;
   align-items: end;
@@ -835,6 +852,10 @@ h1 {
 
   .product-count {
     width: max-content;
+  }
+
+  .viewer-panel.is-wide .product-count {
+    position: static;
   }
 
   .catalog-grid {
